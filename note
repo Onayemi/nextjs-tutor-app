@@ -1,0 +1,250 @@
+npx create-next-app@latest
+
+npm i react-bootstrap bootstrap
+
+https://nextjs.org/docs/
+
+search for "Font Optimization"  under google font
+
+go to layout.js and replace:
+
+
+import { Inter } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'] })
+
+with 
+
+import { Inter } from 'next/font/google'
+ 
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+go to the site: https://fonts.google.com/variablefonts
+and change Inter to Arimo
+
+import { Arimo } from 'next/font/google'
+const arimo = Arimo({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+Add Roboto font also same way
+
+------- React Bootstrap in Next.js --------
+After Installation add to layout.js
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+npm i react-icons
+
+https://react-icons.github.io/react-icons/
+
+//------------------ For Sqlite-----------------------------
+//  setup Prisma with Sqlite
+npm install prisma --save-dev
+npx prisma init --datasource-provider sqlite
+
+// create .env
+// run prisma migration 
+npx prisma migrate dev --name init
+// Install Prisma Client
+npm install @prisma/client 
+
+npx prisma studio  // prisma web
+//-------------------- End For Sqlite---------------------------
+
+//--------------------- For Any database--------------------------
+//  setup Prisma with Mongo and other database
+npm install prisma --save-dev
+
+// Install Prisma Client
+npm install @prisma/client 
+
+// Initialize prisma to our application
+npx prisma init
+
+// This will generate prisma folder with files schema.prisma
+// Inside the schema.prisma it will generate client and database
+npm run dev
+
+// Inside the schema.prisma  create model for database with mongodb or any database
+// after that run below code to generate schema
+npx prisma generate
+npx prisma db push  // to push schema to the database
+
+npx prisma studio  // prisma web
+//----------------------- For Any database ------------------------
+
+// --------- Install bcrypt ---------
+npm i bcrypt
+npm i bcrypt --save-dev @type/bcrypt  // for typescript
+
+// create libs folder and prismadb.js e.g. libs/prismadb.js
+import { PrismaClient } from '@prisma/client'
+// declare prisma globally
+const client = globalThis.prisma || PrismaClient();
+if(process.env.NODE_ENV !== 'production') globalThis.prisma =client;
+
+export default client;
+
+// To test your api from vscode install "thunder client" extension
+
+// CRUD API
+import prisma from "@/app/libs/prismadb"
+import {NextResponse } from "next/server"
+import { AccordionButton } from 'react-bootstrap'
+
+export const POST = async(request) => {
+  try{
+    const body = await request.json();
+    const {title, description } = body;
+    const newPost = await prisma.post.create({
+      data: { title, description }
+    })
+    return NextResponse.json(newPost)
+  }catch(err){
+    return NextResponse.json({message: "Post Error", err}, {status: 500});
+  }
+}
+
+
+--------------
+To Install Next-Auth Package
+
+npm install next-auth
+
+create next-auth
+app/api/auth/[...nextauth]
+[...nextauth]/route.js
+
+//  setup Prisma
+npm install prisma --save-dev
+//  setup Prisma with Sqlite
+npx prisma init --datasource-provider sqlite
+
+/* write mode here */
+npx prisma migrate dev --name init
+// Install Prisma Client
+npm install @prisma/client
+
+// Run prisma studio
+npx prisma studio
+
+
+// =====================  Deploy =====================
+// static html export in Next.Js
+"scripts": {
+  "build": "next build",
+  "export": "next build && next export"
+},
+
+npm run export
+
+// if there is error when build error of image unoptimized
+
+// In next.config.js add the following 
+const nextConfig = {
+  output: 'export',
+  //unoptimized: true
+}
+
+// =============== Deploy from Github to Cpanel with NextJs ===========
+// step 1: Search "nextjs custom Server" in NextJs website
+// create server.js file and page the copy "custom server" file
+// paste the Nextjs Custom Server copy fron Next.js website to Server.js
+
+// ---- Server.js
+const { createServer } = require('http')
+const { parse } = require('url')
+const next = require('next')
+ 
+const dev = process.env.NODE_ENV !== 'production'
+const hostname = process.env.NODE_ENV !== 'production' ? 'localhost' : 'https://remlextech.com'
+const port = process.env.PORT || 3000
+// when using middleware `hostname` and `port` must be provided below
+const app = next({ dev, hostname, port })
+const handle = app.getRequestHandler()
+ 
+app.prepare().then(() => {
+  createServer(async (req, res) => {
+    try {
+      // Be sure to pass `true` as the second argument to `url.parse`.
+      // This tells it to parse the query portion of the URL.
+      const parsedUrl = parse(req.url, true)
+      const { pathname, query } = parsedUrl
+ 
+      if (pathname === '/a') {
+        await app.render(req, res, '/a', query)
+      } else if (pathname === '/b') {
+        await app.render(req, res, '/b', query)
+      } else {
+        await handle(req, res, parsedUrl)
+      }
+    } catch (err) {
+      console.error('Error occurred handling', req.url, err)
+      res.statusCode = 500
+      res.end('internal server error')
+    }
+  })
+    .once('error', (err) => {
+      console.error(err)
+      process.exit(1)
+    })
+    .listen(port, () => {
+      console.log(`> Ready on http://${hostname}:${port}`)
+    })
+})
+
+// Paste this below also to package.json
+// -------- package.json
+{
+  "homepage": "https://remlextech.com",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js"
+  }
+}
+
+// delete ".next" folder in your project before build
+
+// Build the project for production
+npm run build
+
+// after build highlight everything and deselect .git, package-lock, node_modules 
+// after that zip the rest
+
+// stop video in 11:20
+
+
+// ================= Github to Cpanel ==============
+search "github ftp deploy" from google
+Setup ftp to github account
+create nodejs in cpanel to install package
+
+
+// ================ Nextjs ================
+npm i next-auth
+// create dynamic route  api/auth/[...nextauth]/route.js
+// check https://next-auth.js.org docs --> providers
+import NextAuth from 'next-auth/next'
+
+const handler = NextAuth({
+  providers: []
+});
+
+export { handler as GET, handler as POST};
+
+
+// UI Template
+https://chakra-ui.com/
+https://chakra-templates.dev/
+
+
+// ------------  .env -------------------
+APP_URL=http://localhost:3000/api/users
+DATABASE_URL="mysql://root:remlex80@localhost:3307/next_db"
